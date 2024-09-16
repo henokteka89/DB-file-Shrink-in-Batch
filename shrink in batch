@@ -1,11 +1,9 @@
--- Not for Production database
-
 DECLARE @size INT;
 DECLARE @shrinkchunk INT = 500; -- Chunk size for shrinking
 DECLARE @targetsize INT = 4000;  -- Target size for the file
 DECLARE @DATABASENAME NVARCHAR(50) = 'StackOverflow2013';
 DECLARE @sizediff INT;
-DECLARE @Filename NVARCHAR(250) = 'StackOverflow2013_1'; -- File name to be shrinked
+DECLARE @Filename NVARCHAR(250) = 'StackOverflow2013_2'; -- File name to be shrinked
 -- Loop to shrink the file
 WHILE 1 = 1
 BEGIN
@@ -29,4 +27,5 @@ BEGIN
     -- WAITFOR DELAY '00:00:01'; -- 1-second delay between each shrink operation
 END
 
-PRINT 'Shrink operation completed.';
+PRINT 'Shrink operation completed. Current size is ' + Convert (varchar, @size) + ' MB.';
+ 
