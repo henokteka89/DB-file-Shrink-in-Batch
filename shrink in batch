@@ -1,0 +1,32 @@
+-- Not for Production database
+
+DECLARE @size INT;
+DECLARE @shrinkchunk INT = 500; -- Chunk size for shrinking
+DECLARE @targetsize INT = 4000;  -- Target size for the file
+DECLARE @DATABASENAME NVARCHAR(50) = 'StackOverflow2013';
+DECLARE @sizediff INT;
+DECLARE @Filename NVARCHAR(250) = 'StackOverflow2013_1'; -- File name to be shrinked
+-- Loop to shrink the file
+WHILE 1 = 1
+BEGIN
+    -- Get the current file size
+    SELECT @size = mf.size * 8 / 1024 
+    FROM sys.master_files mf
+    JOIN sys.databases d ON mf.database_id = d.database_id 
+    WHERE d.name = @DATABASENAME AND mf.name = @Filename; -- Correct the file name here
+
+    -- Calculate the new size after shrinking by the chunk
+    SET @sizediff = @size - @shrinkchunk;
+
+    -- Break the loop if the current size is less than or equal to the target size
+    IF @size <= @targetsize
+        BREAK;
+
+    -- Shrink the file by the chunk size
+    DBCC SHRINKFILE (@Filename, @sizediff);
+
+    -- Optional: Add a delay if needed to prevent excessive system load
+    -- WAITFOR DELAY '00:00:01'; -- 1-second delay between each shrink operation
+END
+
+PRINT 'Shrink operation completed.';
